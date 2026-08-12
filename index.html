@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluación Sismo Cali v3.2 - Producción Estable</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Librerías de Inyección Forzada con Protocolo Seguro HTTPS Absoluto -->
+    <script src="https://cloudflare.com" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cloudflare.com" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Evaluación de Edificaciones Post-Sismo</h1>
+        <p>Ecosistema de Triage Técnico - NSR-10 / AIS / FEMA</p>
+    </header>
+
+    <div class="report-count" id="reportCount">Reportes almacenados localmente: 0</div>
+
+    <div class="card">
+        <form id="sismoForm">
+            
+            <!-- SECCIÓN 1: DATOS INSTITUCIONALES -->
+            <fieldset>
+                <legend>1. Control e Identificación del Predio</legend>
+                <div class="form-group">
+                    <label for="idEvaluador">Nombre Completo del Evaluador en Campo:</label>
+                    <input type="text" id="idEvaluador" placeholder="Ej. Ing. Carlos Mendoza" required>
+                </div>
+                <div class="form-group">
+                    <label for="profesion">Profesión / Cargo:</label>
+                    <select id="profesion">
+                        <option value="Ingeniero Civil">Ingeniero Civil</option>
+                        <option value="Arquitecto">Arquitecto</option>
+                        <option value="Otros Ingenieros">Otros Ingenieros</option>
+                        <option value="Inspector de Riesgos / Ciudadano">Inspector de Riesgos / Ciudadano</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="matricula">Matrícula Profesional (Opcional):</label>
+                    <input type="text" id="matricula" placeholder="Ej. 25202-XXXXX WVC">
+                </div>
+                <div class="form-group">
+                    <label for="direccion">Dirección Oficial de la Estructura:</label>
+                    <input type="text" id="direccion" placeholder="Ej. Carrera 4 # 2-10, Cali" required>
+                </div>
+                <div class="form-group">
+                    <label for="gps">Posicionamiento Satelital GPS (Automático):</label>
+                    <input type="text" id="gps" readonly required class="gps-field" placeholder="Buscando señal de satélites...">
+                </div>
+            </fieldset>
+
+            <!-- SECCIÓN 2: CONFIGURACIÓN ESTRUCTURAL -->
+            <fieldset>
+                <legend>2. Configuración Estructural</legend>
+                <div class="form-group">
+                    <label for="sistema">Sistema Constructivo Predominante:</label>
+                    <select id="sistema" required>
+                        <option value="">-- Seleccione el Sistema Constructivo --</option>
+                        <option value="Porticos Concreto">Pórticos o Muros de Concreto Reforzado</option>
+                        <option value="Mamposteria Confinada">Mampostería Confinada (Ladrillo con amarres)</option>
+                        <option value="Mamposteria Informal">Mampostería No Reforzada / Autoconstrucción (Ladera)</option>
+                        <option value="Bahareque Tapia">Bahareque / Tapia Pisada / Adobe tradicional</option>
+                    </select>
+                </div>
+            </fieldset>
+
+            <!-- SECCIÓN 3: PANELES DINÁMICOS FILTRADOS POR SISTEMA -->
+            <fieldset id="panelPatologias" class="hidden">
+                <legend id="tituloPatologia">3. Patologías y Alertas Críticas de Evacuación</legend>
+                
+                <!-- Sub-Panel A: Concreto -->
+                <div id="opcionesConcreto" class="panel-especifico hidden">
+                    <div class="form-group-check">
+                        <input type="checkbox" id="c_1">
+                        <label for="c_1">Trituración de concreto o pandeo de acero en columnas/nudos. (Rojo)</label>
+                    </div>
+                    <div class="form-group-check">
+                        <input type="checkbox" id="c_2">
+                        <label for="c_2">Grietas diagonales severas (>3mm) en columnas o vigas de carga. (Naranja)</label>
+                    </div>
+                    <div class="form-group-check">
+                        <input type="checkbox" id="c_3">
+                        <label for="c_3">Desplome o inclinación permanente visible de los pisos altos. (Rojo)</label>
+                    </div>
+                    <div class="form-group-check">
+                        <input type="checkbox" id="c_4">
+                        <label for="c_4">Muros estructurales de cortante con fracturas pasantes de lado a lado. (Amarillo)</label>
+                    </div>
+                    <div class="form-group-check">
+                        <input type="checkbox" id="c_5">
+                        <label for="c_5">Fallas geométricas severas en escaleras o rampas de escape. (Amarillo)</label>
+                    </div>
+                </div>
+
+                <!-- Sub-Panel B: Mampostería Confinada -->
+                <div id="opcionesConfinada" class="panel-especifico hidden">
+                    <div class="form-group-check">
+                        <input type="checkbox" id="m_1">
+                        <label for="m_1">Grietas severas en forma de 'X' o diagonales pasantes en muros de carga. (Naranja)</label>
+                    </div>
+                    <div class="form-group-check">
+                        <input type="checkbox" id="m_2">
+                        <label for="m_2">Separación física o desprendimiento entre el ladrillo y las columnas de amarre. (Amarillo)</label>
+                    </div>
+                    <div class="form-group-check">
+                        <input type="checkbox" id="m_3">
+                        <label for="m_3">Volcamiento, desplome o agrietamiento severo en vigas de corona superiores. (Rojo)</label>
+                    </div>
+                    <div class="form-group-check">
+                        <input type="checkbox" id="m_4">
+                        <label for="m_4">Fracturas en losas de entrepiso que comprometen los apoyos del muro. (Naranja)</label>
+                    </div>
+                    <div class="form-group-check">
+                        <input type="checkbox" id="m_5">
+                        <label for="m_5">Colapso parcial o desprendimiento inminente de fachadas/antepechos. (Amarillo)</label>
+                    </div>
+                </div>
+
+                <!-- Sub-Panel C: Mampostería Informal -->
+                <div id="opcionesInformal" class="panel-especifico hidden">
+                    <div class="form-group-check">
+                        <input type="checkbox" id="i_1">
+                        <label for="i_1">Desplome, inclinación o abombamiento crítico de muros portantes de ladrillo. (Rojo)</label>
+                    </div>
+                    <div class="form-group-check">
+                        <input type="checkbox" id="i_2">
+                        <label for="i_2">Grietas horizontales largas en la base del muro (falla por deslizamiento). (Naranja)</label>
+                    </div>
+                    <div class="form-group-check">
+                        <input type="checkbox" id="i_3">
+                        <label for="i_3">Desprendimiento continuo o caída de unidades sueltas de bloque/ladrillo. (Amarillo)</label>
+                    </div>
+                    <div class="form-group-check">
+                        <input type="checkbox" id="i_4">
+                        <label for="i_4">Deformación excesiva, hundimiento o desanclaje de cubiertas artesanales. (Amarillo)</label>
+                    </div>
+                    <div class="form-group-check">
+                        <input type="checkbox" id="i_5">
+                        <label for="i_5">Grietas pasantes en muros divisorios con riesgo de desprendimiento fel interior. (Amarillo)</label>
+                    </div>
+                </div>
+
+                <!-- Sub-Panel D: Bahareque / Tapia -->
+                <div id="opcionesBahareque" class="panel-especifico hidden">
+                    <div class="form-group-check">
+                        <input type="checkbox" id="b_1">
+                        <label for="b_1">Desgarro, rotura o desanclaje severo en uniones de madera o guadua. (Naranja)</label>
+                    </div>
+                    <div class="form-group-check">
+                        <input type="checkbox" id="b_2">
+                        <label for="b_2">Pérdida masiva del pañete de barro con exposición del entramado. (Amarillo)</label>
+                    </div>
+                    <div class="form-group-check">
+                        <input type="checkbox" id="b_3">
+                        <label for="b_3">Hundimiento o pudrición avanzada en las bases de las columnas de apoyo. (Rojo)</label>
+                    </div>
+                    <div class="form-group-check">
+                        <input type="checkbox" id="b_4">
+                        <label for="b_4">Desplome, agrietamiento vertical o desprendimiento en tapia pisada. (Rojo)</label>
+                    </div>
+                    <div class="form-group-check">
+                        <input type="checkbox" id="b_5">
+                        <label for="b_5">Deformación excesiva de techos o colapso de la cubierta. (Amarillo)</label>
+                    </div>
+                </div>
+
+                <!-- ALERTAS TRANSVERSALES FEMA / GEOTÉCNICAS -->

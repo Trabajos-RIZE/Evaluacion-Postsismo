@@ -15,23 +15,426 @@
         <header>
             <h1>Evaluación Post-Sismo</h1>
             <p class="subtitle">Santiago de Cali, Colombia</p>
+            <div class="step-indicator">
+                <span class="step-badge active" data-step="1">1</span>
+                <span class="step-badge" data-step="2">2</span>
+                <span class="step-badge" data-step="3">3</span>
+                <span class="step-badge" data-step="4">4</span>
+            </div>
         </header>
 
         <main id="main-content">
             <!-- Contenedor dinámico para formularios y vistas -->
             <div id="form-container" class="form-container">
-                <p class="loading-message">Cargando aplicación...</p>
+                
+                <!-- ===== PASO 1: DATOS DEL EVALUADOR Y DIRECCIÓN ===== -->
+                <div class="step-container step-1 active" id="step-1">
+                    <h2 class="step-title">Paso 1: Información del Evaluador</h2>
+                    <p class="step-description">Complete los datos del profesional que realiza la inspección</p>
+
+                    <div class="form-group">
+                        <label for="evaluator-name">Nombre Completo del Evaluador *</label>
+                        <input 
+                            type="text" 
+                            id="evaluator-name" 
+                            name="evaluatorName" 
+                            placeholder="Ej. Ing. Juan Pérez García"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="evaluator-title">Cargo Profesional *</label>
+                        <select id="evaluator-title" name="evaluatorTitle" required>
+                            <option value="">-- Seleccionar --</option>
+                            <option value="ENGINEER_STRUCTURAL">Ingeniero Estructural</option>
+                            <option value="ENGINEER_CIVIL">Ingeniero Civil</option>
+                            <option value="ARCHITECT">Arquitecto</option>
+                            <option value="TECHNICIAN">Técnico Especializado</option>
+                            <option value="INSPECTOR">Inspector de Edificios</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="evaluator-license">Matrícula Profesional / Cédula *</label>
+                        <input 
+                            type="text" 
+                            id="evaluator-license" 
+                            name="evaluatorLicense" 
+                            placeholder="Ej. TP-2024-001234"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="structure-address">Dirección de la Estructura *</label>
+                        <textarea 
+                            id="structure-address" 
+                            name="structureAddress" 
+                            placeholder="Ej. Carrera 5 #10-20, San Alejo, Cali"
+                            rows="3"
+                            required
+                        ></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Coordenadas GPS (Solo Lectura)</label>
+                        <div class="gps-display">
+                            <div class="gps-field">
+                                <label>Latitud:</label>
+                                <input type="text" id="gps-latitude" readonly value="Adquiriendo...">
+                            </div>
+                            <div class="gps-field">
+                                <label>Longitud:</label>
+                                <input type="text" id="gps-longitude" readonly value="Adquiriendo...">
+                            </div>
+                            <div class="gps-field">
+                                <label>Precisión (m):</label>
+                                <input type="text" id="gps-accuracy" readonly value="-">
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-secondary btn-small" id="btn-refresh-gps">
+                            🔄 Actualizar GPS
+                        </button>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="inspection-timestamp">Fecha y Hora de Inspección *</label>
+                        <input 
+                            type="datetime-local" 
+                            id="inspection-timestamp" 
+                            name="inspectionTimestamp"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <!-- ===== PASO 2: SISTEMA CONSTRUCTIVO ===== -->
+                <div class="step-container step-2 hidden" id="step-2">
+                    <h2 class="step-title">Paso 2: Sistema Constructivo Predominante</h2>
+                    <p class="step-description">Seleccione el sistema de construcción del edificio evaluado</p>
+
+                    <div class="form-group">
+                        <label for="construction-system">Sistema Constructivo *</label>
+                        <div class="construction-system-options">
+                            <label class="radio-option">
+                                <input 
+                                    type="radio" 
+                                    name="constructionSystem" 
+                                    value="REINFORCED_CONCRETE"
+                                    id="sys-concrete"
+                                >
+                                <span class="radio-label">
+                                    <strong>Concreto Reforzado (Pórticos)</strong>
+                                    <small>Columnas y vigas de concreto con acero</small>
+                                </span>
+                            </label>
+
+                            <label class="radio-option">
+                                <input 
+                                    type="radio" 
+                                    name="constructionSystem" 
+                                    value="MASONRY"
+                                    id="sys-masonry"
+                                >
+                                <span class="radio-label">
+                                    <strong>Mampostería Estructural</strong>
+                                    <small>Bloques o ladrillos con mortero</small>
+                                </span>
+                            </label>
+
+                            <label class="radio-option">
+                                <input 
+                                    type="radio" 
+                                    name="constructionSystem" 
+                                    value="MIXED"
+                                    id="sys-mixed"
+                                >
+                                <span class="radio-label">
+                                    <strong>Sistema Mixto</strong>
+                                    <small>Combinación de concreto y mampostería</small>
+                                </span>
+                            </label>
+
+                            <label class="radio-option">
+                                <input 
+                                    type="radio" 
+                                    name="constructionSystem" 
+                                    value="STEEL"
+                                    id="sys-steel"
+                                >
+                                <span class="radio-label">
+                                    <strong>Estructura Metálica</strong>
+                                    <small>Acero estructural (rara en Cali)</small>
+                                </span>
+                            </label>
+
+                            <label class="radio-option">
+                                <input 
+                                    type="radio" 
+                                    name="constructionSystem" 
+                                    value="ADOBE_WOOD"
+                                    id="sys-adobe"
+                                >
+                                <span class="radio-label">
+                                    <strong>Adobe / Madera</strong>
+                                    <small>Construcción tradicional</small>
+                                </span>
+                            </label>
+
+                            <label class="radio-option">
+                                <input 
+                                    type="radio" 
+                                    name="constructionSystem" 
+                                    value="OTHER"
+                                    id="sys-other"
+                                >
+                                <span class="radio-label">
+                                    <strong>Otro</strong>
+                                    <small>Sistema no clasificado en las opciones anteriores</small>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="building-stories">Número de Pisos *</label>
+                        <input 
+                            type="number" 
+                            id="building-stories" 
+                            name="buildingStories" 
+                            min="1" 
+                            max="50"
+                            placeholder="Ej. 5"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="building-year">Año de Construcción (Aproximado)</label>
+                        <input 
+                            type="number" 
+                            id="building-year" 
+                            name="buildingYear" 
+                            min="1900" 
+                            max="2024"
+                            placeholder="Ej. 2005"
+                        >
+                    </div>
+                </div>
+
+                <!-- ===== PASO 3: MATRIZ DE PATOLOGÍAS DINÁMICAS ===== -->
+                <div class="step-container step-3 hidden" id="step-3">
+                    <h2 class="step-title">Paso 3: Evaluación de Daños Estructurales</h2>
+                    <p class="step-description">Marque los daños observados según el sistema constructivo seleccionado</p>
+
+                    <!-- Contenedor dinámico para patologías según sistema -->
+                    <div id="pathologies-container" class="pathologies-grid">
+                        <!-- Se llena dinámicamente según construcción -->
+                    </div>
+
+                    <!-- ALERTAS CRÍTICAS GLOBALES (Transversales) -->
+                    <div class="alert alert-danger alert-critical">
+                        <h3>⚠️ Alertas Críticas Globales</h3>
+                        <p>Estas condiciones son críticas independientemente del sistema constructivo</p>
+                    </div>
+
+                    <div class="critical-alerts-grid">
+                        <label class="checkbox-option critical">
+                            <input type="checkbox" name="damages" value="partial_collapse">
+                            <span class="checkbox-label">
+                                <strong>Colapso Parcial</strong>
+                                <small>Visible en alguna parte del edificio</small>
+                            </span>
+                        </label>
+
+                        <label class="checkbox-option critical">
+                            <input type="checkbox" name="damages" value="total_collapse">
+                            <span class="checkbox-label">
+                                <strong>Colapso Total</strong>
+                                <small>Falla estructura completa</small>
+                            </span>
+                        </label>
+
+                        <label class="checkbox-option critical">
+                            <input type="checkbox" name="damages" value="tilt">
+                            <span class="checkbox-label">
+                                <strong>Inclinación Global</strong>
+                                <small>Todo el edificio visiblemente inclinado</small>
+                            </span>
+                        </label>
+
+                        <label class="checkbox-option critical">
+                            <input type="checkbox" name="damages" value="loss_support">
+                            <span class="checkbox-label">
+                                <strong>Pérdida de Apoyo</strong>
+                                <small>Asentamiento diferencial grave</small>
+                            </span>
+                        </label>
+
+                        <label class="checkbox-option critical">
+                            <input type="checkbox" name="damages" value="gas">
+                            <span class="checkbox-label">
+                                <strong>Fuga de Gas Detectada</strong>
+                                <small>Olor a gas / Válvula dañada</small>
+                            </span>
+                        </label>
+
+                        <label class="checkbox-option critical">
+                            <input type="checkbox" name="damages" value="fire">
+                            <span class="checkbox-label">
+                                <strong>Incendio / Humo</strong>
+                                <small>Riesgo inmediato de fuego</small>
+                            </span>
+                        </label>
+
+                        <label class="checkbox-option critical">
+                            <input type="checkbox" name="damages" value="electric">
+                            <span class="checkbox-label">
+                                <strong>Peligro Eléctrico</strong>
+                                <small>Cables expuestos / Chispas</small>
+                            </span>
+                        </label>
+                    </div>
+
+                    <!-- OBSERVACIONES Y NOTAS -->
+                    <div class="form-group">
+                        <label for="observations">Observaciones Generales</label>
+                        <textarea 
+                            id="observations" 
+                            name="observations" 
+                            placeholder="Escriba cualquier observación adicional relevante para la evaluación..."
+                            rows="4"
+                        ></textarea>
+                    </div>
+                </div>
+
+                <!-- ===== PASO 4: EVIDENCIAS FOTOGRÁFICAS Y VEREDICTO ===== -->
+                <div class="step-container step-4 hidden" id="step-4">
+                    <h2 class="step-title">Paso 4: Evidencias Fotográficas</h2>
+                    <p class="step-description">Capture las 3 fotografías obligatorias de evidencia</p>
+
+                    <div class="photos-grid">
+                        <!-- FOTO 1: Vista Estructural -->
+                        <div class="photo-upload-card">
+                            <h3>📷 Foto 1: Vista Estructural General</h3>
+                            <p class="photo-description">Captura la fachada principal o vista general del edificio</p>
+                            <div class="photo-preview" id="photo-1-preview">
+                                <span class="placeholder">Sin foto</span>
+                            </div>
+                            <input 
+                                type="file" 
+                                id="photo-1" 
+                                name="photoStructural" 
+                                accept="image/*" 
+                                capture="environment"
+                                class="file-input hidden"
+                            >
+                            <button type="button" class="btn btn-primary btn-upload" onclick="document.getElementById('photo-1').click()">
+                                📸 Capturar/Seleccionar
+                            </button>
+                        </div>
+
+                        <!-- FOTO 2: Vista de Fachada -->
+                        <div class="photo-upload-card">
+                            <h3>📷 Foto 2: Detalles de Fachada</h3>
+                            <p class="photo-description">Grietas, desprendimientos, daños visibles</p>
+                            <div class="photo-preview" id="photo-2-preview">
+                                <span class="placeholder">Sin foto</span>
+                            </div>
+                            <input 
+                                type="file" 
+                                id="photo-2" 
+                                name="photoFacade" 
+                                accept="image/*" 
+                                capture="environment"
+                                class="file-input hidden"
+                            >
+                            <button type="button" class="btn btn-primary btn-upload" onclick="document.getElementById('photo-2').click()">
+                                📸 Capturar/Seleccionar
+                            </button>
+                        </div>
+
+                        <!-- FOTO 3: Detalle de Daño -->
+                        <div class="photo-upload-card">
+                            <h3>📷 Foto 3: Detalle de Daño Específico</h3>
+                            <p class="photo-description">Zoom en elementos críticos dañados</p>
+                            <div class="photo-preview" id="photo-3-preview">
+                                <span class="placeholder">Sin foto</span>
+                            </div>
+                            <input 
+                                type="file" 
+                                id="photo-3" 
+                                name="photoDetail" 
+                                accept="image/*" 
+                                capture="environment"
+                                class="file-input hidden"
+                            >
+                            <button type="button" class="btn btn-primary btn-upload" onclick="document.getElementById('photo-3').click()">
+                                📸 Capturar/Seleccionar
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- SEMÁFORO DE HABITABILIDAD - VEREDICTO FLOTANTE -->
+                    <div class="verdict-panel" id="verdict-panel">
+                        <h3>Semáforo de Habitabilidad</h3>
+                        <div class="verdict-display" id="verdict-display">
+                            <div class="verdict-badge" id="verdict-badge">
+                                <span class="verdict-emoji">⚪</span>
+                                <span class="verdict-text">Evaluación Pendiente</span>
+                            </div>
+                            <div class="verdict-code" id="verdict-code">--</div>
+                            <div class="verdict-action" id="verdict-action">Complete todos los campos para evaluar</div>
+                        </div>
+                    </div>
+
+                    <!-- BOTONES DE CONTROL GLOBAL -->
+                    <div class="global-controls">
+                        <button type="button" class="btn btn-success btn-large" id="btn-save-record">
+                            💾 Guardar Registro
+                        </button>
+                    </div>
+
+                    <!-- PANEL INSTITUCIONAL INFERIOR -->
+                    <div class="institutional-panel">
+                        <h3>Opciones de Salida</h3>
+                        <div class="export-controls">
+                            <button type="button" class="btn btn-danger" id="btn-generate-pdf">
+                                📄 Generar Informe Técnico PDF
+                            </button>
+                            <button type="button" class="btn btn-info" id="btn-export-geojson">
+                                🗺️ Exportar Capa QGIS (.geojson)
+                            </button>
+                            <button type="button" class="btn btn-warning" id="btn-clear-local">
+                                🗑️ Purgar Almacenamiento Local
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CONTROLES DE NAVEGACIÓN ENTRE PASOS -->
+                <div class="step-navigation">
+                    <button type="button" class="btn btn-secondary" id="btn-prev" disabled>
+                        ← Anterior
+                    </button>
+                    <span class="step-counter"><span id="current-step">1</span> / 4</span>
+                    <button type="button" class="btn btn-primary" id="btn-next">
+                        Siguiente →
+                    </button>
+                </div>
             </div>
         </main>
 
         <footer>
-            <p><small>Basado en NSR-10, AIS, FEMA/ATC-20 | v1.0.0-HITO1</small></p>
+            <p><small>Basado en NSR-10, AIS, FEMA/ATC-20 | v1.0.0-HITO4</small></p>
         </footer>
     </div>
 
     <!-- Módulos Core -->
     <script src="src/core/config.js"></script>
     <script src="src/core/triage.js"></script>
+    <script src="src/core/db.js"></script>
     <script src="src/core/storage.js"></script>
     <script src="src/core/export.js"></script>
     <script src="src/core/gps.js"></script>

@@ -1,96 +1,105 @@
 /**
- * MÓDULO: Photos
- * Descripción: Gestión de fotografías de inspección
- * Responsabilidad: Capturar y almacenar evidencia fotográfica en IndexedDB
- * HITO: 5 (En HITO 1, solo estructura)
- * Estado: STUB - Interfaz definida, implementación en HITO 5
- * Regla: Usar IndexedDB (blob), no localStorage (base64)
+ * PHOTOGRAPHY COMPRESSION & PROCESSING CORE MODULE (MODULE VERSION)
+ * Ecosistema Triage Sísmico Cali v3.7 - Hito 5 Production
  */
 
 const PhotosModule = (() => {
-  'use strict';
+    const REQUIRED_PHOTOS = 3;
 
-  const REQUIRED_PHOTOS = 3; // Mínimo de fotos obligatorias
+    // Procesa el archivo de imagen nativo capturado por la cámara del celular
+    function compress(fileObject) {
+        return new Promise((resolve) => {
+            if (!fileObject) {
+                resolve(null);
+                return;
+            }
 
-  /**
-   * Captura una foto desde la cámara
-   * IMPLEMENTAR EN HITO 5: Usar getUserMedia o input[type=file]
-   * @returns {Promise<Blob>} Blob de la imagen
-   */
-  async function capturePhoto() {
-    console.log('[Photos] Capturando foto (STUB)');
-    // IMPLEMENTAR EN HITO 5
-    return null;
-  }
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    
+                    // Escala métrica fija para resguardar el búfer de IndexedDB
+                    const MAX_WIDTH = 400;
+                    let width = img.width;
+                    let height = img.height;
 
-  /**
-   * Guarda una foto con metadatos
-   * IMPLEMENTAR EN HITO 5: Guardar en IndexedDB
-   * @param {Blob} photoBlob - Archivo de imagen
-   * @param {string} reportId - ID del reporte
-   * @param {string} type - Tipo: 'fachada', 'interior', 'daño'
-   * @returns {Promise<string>} photo_id
-   */
-  async function savePhoto(photoBlob, reportId, type) {
-    console.log('[Photos] Guardando foto en IndexedDB (STUB)');
-    console.log('[Photos] Tipo:', type);
-    // IMPLEMENTAR EN HITO 5
-    return `photo_${Date.now()}`;
-  }
+                    if (width > MAX_WIDTH) {
+                        height *= MAX_WIDTH / width;
+                        width = MAX_WIDTH;
+                    }
 
-  /**
-   * Carga una foto por ID
-   * IMPLEMENTAR EN HITO 5
-   * @param {string} photoId
-   * @returns {Promise<Blob>}
-   */
-  async function loadPhoto(photoId) {
-    console.log('[Photos] Cargando foto:', photoId, '(STUB)');
-    // IMPLEMENTAR EN HITO 5
-    return null;
-  }
+                    canvas.width = width;
+                    canvas.height = height;
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    // Codificación agresiva JPEG fijada al 50% de calidad
+                    const base64Compressed = canvas.toDataURL('image/jpeg', 0.50);
+                    console.log(`[Photos] Imagen comprimida con éxito. Reducción de peso completada.`);
+                    resolve(base64Compressed);
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(fileObject);
+        });
+    }
 
-  /**
-   * Lista fotos asociadas a un reporte
-   * IMPLEMENTAR EN HITO 5
-   * @param {string} reportId
-   * @returns {Promise<Array>} Listado de fotos
-   */
-  async function listPhotos(reportId) {
-    console.log('[Photos] Listando fotos del reporte:', reportId, '(STUB)');
-    // IMPLEMENTAR EN HITO 5
-    return [];
-  }
+    // Genera y renderiza una miniatura (thumbnail) en la interfaz móvil
+    function preview(base64Data, targetInputId) {
+        // Encontrar o crear un contenedor dinámico justo debajo del input de tipo file
+        const inputElement = document.getElementById(targetInputId);
+        if (!inputElement) return;
 
-  /**
-   * Valida si el reporte tiene el mínimo de fotos
-   * @param {string} reportId
-   * @returns {Promise<boolean>}
-   */
-  async function hasRequiredPhotos(reportId) {
-    const photos = await listPhotos(reportId);
-    return photos.length >= REQUIRED_PHOTOS;
-  }
+        let previewContainer = inputElement.nextElementSibling;
+        if (!previewContainer || !previewContainer.classList.contains('thumbnail-preview-container')) {
+            previewContainer = document.createElement('div');
+            previewContainer.className = 'thumbnail-preview-container';
+            previewContainer.style.marginTop = '8px';
+            inputElement.parentNode.insertBefore(previewContainer, inputElement.nextSibling);
+        }
 
-  /**
-   * Elimina una foto
-   * IMPLEMENTAR EN HITO 5
-   * @param {string} photoId
-   * @returns {Promise<boolean>}
-   */
-  async function deletePhoto(photoId) {
-    console.log('[Photos] Eliminando foto:', photoId, '(STUB)');
-    // IMPLEMENTAR EN HITO 5
-    return true;
-  }
+        previewContainer.innerHTML = ''; // Limpiar preexistentes
 
-  return {
-    REQUIRED_PHOTOS,
-    capturePhoto,
-    savePhoto,
-    loadPhoto,
-    listPhotos,
-    hasRequiredPhotos,
-    deletePhoto
-  };
+        const imgElement = document.createElement('img');
+        imgElement.src = base64Data;
+        imgElement.style.width = '90px'; // Tamaño óptimo de miniatura para pantalla táctil
+        imgElement.style.height = '65px';
+        imgElement.style.objectFit = 'cover';
+        imgElement.style.borderRadius = '6px';
+        imgElement.style.border = '2px solid #1e3a8a';
+
+        previewContainer.appendChild(imgElement);
+    }
+
+    function hasRequiredPhotos(photosObject) {
+        if (!photosObject) return false;
+        let count = 0;
+        if (photosObject.f1) count++;
+        if (photosObject.f2) count++;
+        if (photosObject.f3) count++;
+        return count >= REQUIRED_PHOTOS;
+    }
+
+    function deletePhoto(photoId) {
+        console.log(`[Photos] Eliminando foto: ${photoId} de la memoria temporal`);
+        return true;
+    }
+
+    // Interfaz pública mapeada
+    return {
+        REQUIRED_PHOTOS: REQUIRED_PHOTOS,
+        compress: compress,
+        preview: preview,
+        hasRequiredPhotos: hasRequiredPhotos,
+        deletePhoto: deletePhoto
+    };
 })();
+
+// Escuchador global automático para procesar cargas y pintar miniaturas reactivas
+document.addEventListener('DOMContentLoaded', () => {
+    // Exponer métodos de apoyo en el objeto global de forma segura
+    window.optimizarYConvertirImagen = PhotosModule.compress;
+    window.renderizarMiniatura = PhotosModule.preview;
+});

@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Triage Engine - Unit Test Runner</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #4ec9b0;
+            border-bottom: 2px solid #4ec9b0;
+            padding-bottom: 10px;
+        }
+        .test-suite {
+            margin: 20px 0;
+            background-color: #252526;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #007acc;
+        }
+        .test-case {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #1e1e1e;
+            border-radius: 3px;
+        }
+        .test-pass {
+            color: #4ec9b0;
+            border-left: 3px solid #4ec9b0;
+        }
+        .test-fail {
+            color: #f48771;
+            border-left: 3px solid #f48771;
+            background-color: #3e2825;
+        }
+        .test-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .assertion {
+            margin-left: 20px;
+            font-size: 0.9em;
+        }
+        .summary {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #252526;
+            border-radius: 5px;
+            border: 2px solid #4ec9b0;
+        }
+        .summary-line {
+            margin: 8px 0;
+            font-size: 1.1em;
+        }
+        .passed {
+            color: #4ec9b0;
+        }
+        .failed {
+            color: #f48771;
+        }
+        .total {
+            color: #d4d4d4;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Triage Engine - Unit Test Suite (HITO 2)</h1>
+        <div id="test-output"></div>
+        <div id="summary" class="summary"></div>
+    </div>
+
+    <!-- Load the triage module -->
+    <script src="../../src/core/triage.js"></script>
+    
+    <!-- Load and run tests -->
+    <script>
+        // Simple assertion helper
+        function assert(condition, message) {
+            if (!condition) {
+                throw new Error(`❌ Assertion failed: ${message}`);
+            }
+            return message;
+        }
+
+        function assertEqual(actual, expected, message) {
+            if (actual !== expected) {
+                throw new Error(`❌ Assertion failed: ${message}\n   Expected: ${expected}\n   Actual: ${actual}`);
+            }
+            return message;
+        }
+
+        function assertTrue(condition, message) {
+            assert(condition === true, message);
+            return message;
+        }
+
+        function assertFalse(condition, message) {
+            assert(condition === false, message);
+            return message;
+        }
+
+        // Test functions
+        function testC1Dominance_ColumnCrush() {
+            const rules = { schema_version: '1.0' };
+            const assessment = {
+                damages: {
+                    'partial_collapse': 'NO',
+                    'total_collapse': 'NO',
+                    'column_crush': 'YES',
+                    'column_displaced': 'NO',
+                    'tilt': 'NO',
+                    'loss_support': 'NO',
+                    'gas': 'NO',
+                    'fire': 'NO',
+                    'electric': 'NO',
+                    'column_diag_crack': 'NO',
+                    'column_steel': 'NO',
+                    'beam_diag_crack': 'NO',
+                    'wall_diag': 'NO',
+                    'wall_out_plane': 'NO',
+                    'foundation_damage': 'NO',
+                    'settlement': 'NO',
+                    'landslide': 'NO',
+                    'masonry_diag': 'NO',
+                    'masonry_out_plane': 'NO',
+                    'facade_fall': 'NO',
+                    'minor_crack': 'NO',
+                    'debris': 'NO',
+                    'suspended_hazard': 'NO',
+                    'ground_cracks': 'NO',
+                    'hvac_damage': 'NO',
+                    'partition_damage': 'NO'
+                }
+            };
+
+            const result = TriageModule.evaluateAssessment(assessment, rules);
+
+            assertEqual(result.level, '🔴 P1', 'Level must be P1 for critical column crush');
+            assertEqual(result.result_code, 'PREVENTIVE_EVACUATION', 'Result code must be PREVENTIVE_EVACUATION');
+            assertTrue(result.requiresTechnicalInspection, 'Technical inspection required for P1');
+            assert(result.reasons.some(r => r.condition === 'column_crush'), 'Must document column_crush reason');
+        }
+
+        function testC1Dominance_TiltIncline() {
+            const rules = { schema_version: '1.0' };
+            const assessment = {
+                damages: {
+                    'partial_collapse': 'NO',
+                    'total_collapse': 'NO',
+                    'column_crush': 'NO',
+                    'column_displaced': 'NO',
+                    'tilt': 'YES',
+                    'loss_support': 'NO',
+                    'gas': 'NO',
+                    'fire': 'NO',
+                    'electric': 'NO',
+                    'column_diag_crack': 'NO',
+                    'column_steel': 'NO',
+                    'beam_diag_crack': 'NO',
+                    'wall_diag': 'NO',
+                    'wall_out_plane': 'NO',
+                    'foundation_damage': 'NO',
+                    'settlement': 'NO',
+                    'landslide': 'NO',
+                    'masonry_diag': 'NO',
+                    'masonry_out_plane': 'NO',
+                    'facade_fall': 'NO',
+                    'minor_crack': 'NO',
+                    'debris': 'NO',
+                    'suspended_hazard': 'NO',
+                    'ground_cracks': 'NO',
+                    'hvac_damage': 'NO',
+                    'partition_damage': 'NO'
+                }
+            };
+
+            const result = TriageModule.evaluateAssessment(assessment, rules);
+
+            assertEqual(result.level, '🔴 P1', 'Level must be P1 for global tilt');
+            assertEqual(result.result_code, 'PREVENTIVE_EVACUATION', 'Result code must be PREVENTIVE_EVACUATION');
+            assertTrue(result.requiresTechnicalInspection, 'Technical inspection required');
+            assert(result.reasons.some(r => r.condition === 'tilt'), 'Must document tilt reason');
+        }
+
+        function testC2Dominance_ExposedSteel() {
+            const rules = { schema_version: '1.0' };
+            const assessment = {
+                damages: {
+                    'partial_collapse': 'NO',
+                    'total_collapse': 'NO',
+                    'column_crush': 'NO',
+                    'column_displaced': 'NO',
+                    'tilt': 'NO',
+                    'loss_support': 'NO',
+                    'gas': 'NO',
+                    'fire': 'NO',
+                    'electric': 'NO',
+                    'column_diag_crack': 'NO',
+                    'column_steel': 'YES',
+                    'beam_diag_crack': 'NO',
+                    'wall_diag': 'NO',
+                    'wall_out_plane': 'NO',
+                    'foundation_damage': 'NO',
+                    'settlement': 'NO',
+                    'landslide': 'NO',
+                    'masonry_diag': 'NO',
+                    'masonry_out_plane': 'NO',
+                    'facade_fall': 'NO',
+                    'minor_crack': 'NO',
+                    'debris': 'NO',
+                    'suspended_hazard': 'NO',
+                    'ground_cracks': 'NO',
+                    'hvac_damage': 'NO',
+                    'partition_damage': 'NO'
+                }
+            };
+
+            const result = TriageModule.evaluateAssessment(assessment, rules);
+
+            assertEqual(result.level, '🟠 P2', 'Level must be P2 for exposed steel');
+            assertEqual(result.result_code, 'PRIORITY_INSPECTION', 'Result code must be PRIORITY_INSPECTION');
+            assertTrue(result.requiresTechnicalInspection, 'Technical inspection required');
+            assert(result.reasons.some(r => r.condition === 'column_steel'), 'Must document column_steel reason');
+        }
+
+        function testC2Dominance_Landslide() {
+            const rules = { schema_version: '1.0' };
+            const assessment = {
+                damages: {
+                    'partial_collapse': 'NO',
+                    'total_collapse': 'NO',
+                    'column_crush': 'NO',
+                    'column_displaced': 'NO',
+                    'tilt': 'NO',
+                    'loss_support': 'NO',
+                    'gas': 'NO',
+                    'fire': 'NO',
+                    'electric': 'NO',
+                    'column_diag_crack': 'NO',
+                    'column_steel': 'NO',
+                    'beam_diag_crack': 'NO',
+                    'wall_diag': 'NO',
+                    'wall_out_plane': 'NO',
+                    'foundation_damage': 'NO',
+                    'settlement': 'NO',
+                    'landslide': 'YES',
+                    'masonry_diag': 'NO',
+                    'masonry_out_plane': 'NO',
+                    'facade_fall': 'NO',
+                    'minor_crack': 'NO',
+                    'debris': 'NO',
+                    'suspended_hazard': 'NO',
+                    'ground_cracks': 'NO',
+                    'hvac_damage': 'NO',
+                    'partition_damage': 'NO'
+                }
+            };
+
+            const result = TriageModule.evaluateAssessment(assessment, rules);
+
+            assertEqual(result.level, '🟠 P2', 'Level must be P2 for landslide');
+            assertEqual(result.result_code, 'PRIORITY_INSPECTION', 'Result code must be PRIORITY_INSPECTION');
+            assertTrue(result.requiresTechnicalInspection, 'Technical inspection required');
+        }
+
+        function testC2Dominance_MasonryDiagonalCracks() {
+            const rules = { schema_version: '1.0' };
+            const assessment = {
+                damages: {
+                    'partial_collapse': 'NO',
+                    'total_collapse': 'NO',
+                    'column_crush': 'NO',
+                    'column_displaced': 'NO',
+                    'tilt': 'NO',
+                    'loss_support': 'NO',
+                    'gas': 'NO',
+                    'fire': 'NO',
+                    'electric': 'NO',
+                    'column_diag_crack': 'NO',
+                    'column_steel': 'NO',
+                    'beam_diag_crack': 'NO',
+                    'wall_diag': 'NO',
+                    'wall_out_plane': 'NO',
+                    'foundation_damage': 'NO',
+                    'settlement': 'NO',
+                    'landslide': 'NO',
+                    'masonry_diag': 'YES',
+                    'masonry_out_plane': 'NO',
+                    'facade_fall': 'NO',
+                    'minor_crack': 'NO',
+                    'debris': 'NO',
+                    'suspended_hazard': 'NO',
+                    'ground_cracks': 'NO',
+                    'hvac_damage': 'NO',
+                    'partition_damage': 'NO'
+                }
+            };
+
+            const result = TriageModule.evaluateAssessment(assessment, rules);
+
+            assertEqual(result.level, '🟠 P2', 'Level must be P2 for masonry diagonal cracks');
+            assertEqual(result.result_code, 'PRIORITY_INSPECTION', 'Result code must be PRIORITY_INSPECTION');
+        }
+
+        function testUncertainty_C1_NoSabe() {
+            const rules = { schema_version: '1.0' };
+            const assessment = {
+                damages: {
+                    'partial_collapse': 'NO',
+                    'total_collapse': 'NO',
+                    'column_crush': 'NO',
+                    'column_displaced': 'NO',
+                    'tilt': 'NO',
+                    'loss_support': 'NO',
+                    'gas': 'NO',
+                    'fire': 'NO',
+                    'electric': 'NO',
+                    'column_diag_crack': 'NO',
+                    'column_steel': 'NO',
+                    'beam_diag_crack': 'NO',
+                    'wall_diag': 'NO',
+                    'wall_out_plane': 'NO',
+                    'foundation_damage': 'NO',
+                    'settlement': 'NO',
+                    'landslide': 'NO',
+                    'masonry_diag': 'NO_SABE',
+                    'masonry_out_plane': 'NO',
+                    'facade_fall': 'NO',
+                    'minor_crack': 'NO',
+                    'debris': 'NO',
+                    'suspended_hazard': 'NO',
+                    'ground_cracks': 'NO',
+                    'hvac_damage': 'NO',
+                    'partition_damage': 'NO'
+                }
+            };
+
+            const result = TriageModule.evaluateAssessment(assessment, rules);
+
+            assertEqual(result.level, '⚪ NR', 'Level must be NR when C2 has NO_SABE');
+            assertEqual(result.result_code, 'UNDETERMINED_INCERTIDUMBRE', 'Result code must be UNDETERMINED_INCERTIDUMBRE');
+            assertTrue(result.requiresTechnicalInspection, 'Technical inspection mandatory for undetermined');
+        }
+
+        function testUncertainty_C1_Undefined() {
+            const rules = { schema_version: '1.0' };
+            const assessment = {
+                damages: {
+                    'partial_collapse': 'NO',
+                    'total_collapse': 'NO',
+                    'column_crush': 'NO',
+                    'column_displaced': 'NO',
+                    'tilt': 'NO',
+                    'loss_support': 'NO',
+                    'gas': 'NO',
+                    'fire': 'NO',
+                    'electric': 'NO',
+                    'column_diag_crack': 'NO',
+                    'column_steel': 'NO',
+                    'beam_diag_crack': 'NO',
+                    'wall_diag': 'NO',
+                    'wall_out_plane': 'NO',
+                    'foundation_damage': 'NO',
+                    'settlement': 'NO',
+                    'landslide': 'NO',
+                    'masonry_out_plane': 'NO',
+                    'facade_fall': 'NO',
+                    'minor_crack': 'NO',
+                    'debris': 'NO',
+                    'suspended_hazard': 'NO',
+                    'ground_cracks': 'NO',
+                    'hvac_damage': 'NO',
+                    'partition_damage': 'NO'
+                }
+            };
+
+            const result = TriageModule.evaluateAssessment(assessment, rules);
+
+            assertEqual(result.level, '⚪ NR', 'Level must be NR when C2 is undefined');
+            assertEqual(result.result_code, 'UNDETERMINED_INCERTIDUMBRE', 'Result code must be UNDETERMINED_INCERTIDUMBRE');
+        }
+
+        function testC3Dominance_Debris() {
+            const rules = { schema_version: '1.0' };
+            const assessment = {
+                damages: {
+                    'partial_collapse': 'NO',
+                    'total_collapse': 'NO',
+                    'column_crush': 'NO',
+                    'column_displaced': 'NO',
+                    'tilt': 'NO',
+                    'loss_support': 'NO',
+                    'gas': 'NO',
+                    'fire': 'NO',
+                    'electric': 'NO',
+                    'column_diag_crack': 'NO',
+                    'column_steel': 'NO',
+                    'beam_diag_crack': 'NO',
+                    'wall_diag': 'NO',
+                    'wall_out_plane': 'NO',
+                    'foundation_damage': 'NO',
+                    'settlement': 'NO',
+                    'landslide': 'NO',
+                    'masonry_diag': 'NO',
+                    'masonry_out_plane': 'NO',
+                    'facade_fall': 'NO',
+                    'minor_crack': 'NO',
+                    'debris': 'YES',
+                    'suspended_hazard': 'NO',
+                    'ground_cracks': 'NO',
+                    'hvac_damage': 'NO',
+                    'partition_damage': 'NO'
+                }
+            };
+
+            const result = TriageModule.evaluateAssessment(assessment, rules);
+
+            assertEqual(result.level, '🟡 P3', 'Level must be P3 for non-structural debris');
+            assertEqual(result.result_code, 'RESTRICTED_USE', 'Result code must be RESTRICTED_USE');
+            assertTrue(result.requiresTechnicalInspection, 'Technical inspection required');
+        }
+
+        function testSafeBuilding_AllNo() {
+            const rules = { schema_version: '1.0' };
+            const assessment = {
+                damages: {
+                    'partial_collapse': 'NO',
+                    'total_collapse': 'NO',
+                    'column_crush': 'NO',
+                    'column_displaced': 'NO',
+                    'tilt': 'NO',
+                    'loss_support': 'NO',
+                    'gas': 'NO',
+                    'fire': 'NO',
+                    'electric': 'NO',
+                    'column_diag_crack': 'NO',
+                    'column_steel': 'NO',
+                    'beam_diag_crack': 'NO',
+                    'wall_diag': 'NO',
+                    'wall_out_plane': 'NO',
+                    'foundation_damage': 'NO',
+                    'settlement': 'NO',
+                    'landslide': 'NO',
+                    'masonry_diag': 'NO',
+                    'masonry_out_plane': 'NO',
+                    'facade_fall': 'NO',
+                    'minor_crack': 'NO',
+                    'debris': 'NO',
+                    'suspended_hazard': 'NO',
+                    'ground_cracks': 'NO',
+                    'hvac_damage': 'NO',
+                    'partition_damage': 'NO'
+                }
+            };
+
+            const result = TriageModule.evaluateAssessment(assessment, rules);
+
+            assertEqual(result.level, '🟢 P4', 'Level must be P4 when no damage found');
+            assertEqual(result.result_code, 'NO_EVIDENT_DAMAGE', 'Result code must be NO_EVIDENT_DAMAGE');
+            assertFalse(result.requiresTechnicalInspection, 'No technical inspection required for P4');
+        }
+
+        function testEmptyAssessment() {
+            const rules = { schema_version: '1.0' };
+            const assessment = {
+                damages: {}
+            };
+
+            const result = TriageModule.evaluateAssessment(assessment, rules);
+
+            assertEqual(result.level, '⚪ NR', 'Level must be NR for empty assessment');
+            assertEqual(result.result_code, 'UNDETERMINED_INCERTIDUMBRE', 'Result code must be UNDETERMINED_INCERTIDUMBRE');
+        }
+
+        function testRuleVersionTraceability() {
+            const rules = { schema_version: '2.1' };
+            const assessment = {
+                damages: {
+                    'partial_collapse': 'NO',
+                    'total_collapse': 'NO',
+                    'column_crush': 'NO',
+                    'column_displaced': 'NO',
+                    'tilt': 'NO',
+                    'loss_support': 'NO',
+                    'gas': 'NO',
+                    'fire': 'NO',
+                    'electric': 'NO',
+                    'column_diag_crack': 'NO',
+                    'column_steel': 'NO',
+                    'beam_diag_crack': 'NO',
+                    'wall_diag': 'NO',
+                    'wall_out_plane': 'NO',
+                    'foundation_damage': 'NO',
+                    'settlement': 'NO',
+                    'landslide': 'NO',
+                    'masonry_diag': 'NO',
+                    'masonry_out_plane': 'NO',
+                    'facade_fall': 'NO',
+                    'minor_crack': 'NO',
+                    'debris': 'NO',
+                    'suspended_hazard': 'NO',
+                    'ground_cracks': 'NO',
+                    'hvac_damage': 'NO',
+                    'partition_damage': 'NO'
+                }
+            };
+
+            const result = TriageModule.evaluateAssessment(assessment, rules);
+
+            assertEqual(result.rule_version, '2.1', 'Rule version must match input rules');
+            assert(result.timestamp, 'Timestamp must be recorded for audit');
+        }
+
+        // Run all tests
+        function runAllTests() {
+            const tests = [
+                { name: 'C1 Dominance - Column Crush', fn: testC1Dominance_ColumnCrush },
+                { name: 'C1 Dominance - Global Tilt', fn: testC1Dominance_TiltIncline },
+                { name: 'C2 Dominance - Exposed Steel', fn: testC2Dominance_ExposedSteel },
+                { name: 'C2 Dominance - Landslide', fn: testC2Dominance_Landslide },
+                { name: 'C2 Dominance - Masonry X-Cracks', fn: testC2Dominance_MasonryDiagonalCracks },
+                { name: 'Uncertainty - C2 NO_SABE', fn: testUncertainty_C1_NoSabe },
+                { name: 'Uncertainty - C2 Undefined', fn: testUncertainty_C1_Undefined },
+                { name: 'C3 Dominance - Debris', fn: testC3Dominance_Debris },
+                { name: 'Safe Building - All NO', fn: testSafeBuilding_AllNo },
+                { name: 'Empty Assessment', fn: testEmptyAssessment },
+                { name: 'Rule Version Traceability', fn: testRuleVersionTraceability }
+            ];
+
+            let passed = 0;
+            let failed = 0;
+            const output = document.getElementById('test-output');
+            const summary = document.getElementById('summary');
+
+            for (const test of tests) {
+                try {
+                    test.fn();
+                    
+                    const testDiv = document.createElement('div');
+                    testDiv.className = 'test-case test-pass';
+                    testDiv.innerHTML = `<div class="test-title">✅ ${test.name}</div>`;
+                    output.appendChild(testDiv);
+                    passed++;
+                } catch (error) {
+                    const testDiv = document.createElement('div');
+                    testDiv.className = 'test-case test-fail';
+                    testDiv.innerHTML = `<div class="test-title">❌ ${test.name}</div>
+                                        <div class="assertion">${error.message.replace(/\n/g, '<br>')}</div>`;
+                    output.appendChild(testDiv);
+                    failed++;
+                }
+            }
+
+            const summaryHTML = `
+                <div class="summary-line"><span class="passed">✅ Passed: ${passed}</span></div>
+                <div class="summary-line"><span class="failed">❌ Failed: ${failed}</span></div>
+                <div class="summary-line"><span class="total">📊 Total: ${tests.length}</span></div>
+            `;
+            summary.innerHTML = summaryHTML;
+        }
+
+        // Run tests when page loads
+        window.addEventListener('load', runAllTests);
+    </script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "id": "cali-co",
+  "name": "Santiago de Cali",
+  "country": "Colombia",
+  "language": "es-CO",
+  "institutional": [
+    "Secretaría de Gestión del Riesgo de Emergencias y Desastres",
+    "IDESC",
+    "SATIC"
+  ],
+  "standards": [
+    "NSR-10 y modificaciones vigentes",
+    "AIS/IDIGER — metodología post-sismo, sujeto a validación institucional"
+  ],
+  "emergency_message": "Si existe peligro inmediato, no ingrese. Active la ruta local de emergencias."
+}

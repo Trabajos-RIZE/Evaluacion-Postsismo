@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es-CO">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sistema de Evaluación Visual Post-Sismo - Colombia">
+    <meta name="theme-color" content="#1a472a">
+    <title>Evaluación Post-Sismo | Cali</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect fill='%231a472a' width='64' height='64'/><text x='32' y='40' font-size='32' fill='white' text-anchor='middle' font-weight='bold'>E</text></svg>">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app" class="app-container">
+        <header>
+            <h1>Evaluación Post-Sismo</h1>
+            <p class="subtitle">Santiago de Cali, Colombia</p>
+        </header>
+
+        <main id="main-content">
+            <!-- Contenedor dinámico para formularios y vistas -->
+            <div id="form-container" class="form-container">
+                <p class="loading-message">Cargando aplicación...</p>
+            </div>
+        </main>
+
+        <footer>
+            <p><small>Basado en NSR-10, AIS, FEMA/ATC-20 | v1.0.0-HITO1</small></p>
+        </footer>
+    </div>
+
+    <!-- Módulos Core -->
+    <script src="src/core/config.js"></script>
+    <script src="src/core/triage.js"></script>
+    <script src="src/core/storage.js"></script>
+    <script src="src/core/export.js"></script>
+    <script src="src/core/gps.js"></script>
+    <script src="src/core/photos.js"></script>
+    <script src="src/core/ai-context.js"></script>
+
+    <!-- Módulos UI -->
+    <script src="src/ui/form.js"></script>
+
+    <!-- Aplicación Principal -->
+    <script src="app.js"></script>
+</body>
+</html>

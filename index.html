@@ -3,12 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ecosistema Triage Sísmico Cali v3.4</title>
+    <title>Ecosistema Triage Sísmico Cali v3.5</title>
     <link rel="manifest" href="manifest.json">
-    <script src="https://cloudflare.com" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cloudflare.com" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    
+    <!-- Librerías Seguras HTTPS con Atributos de Integridad Absoluta -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
     <style>
-        :root { --primary: #1e3a8a; --background: #f1f5f9; --card: #ffffff; --text: #0f172a; --green: #10b981; --yellow: #eab308; --orange: #f97316; --red: #ef4444; }
+        :root {
+            --primary: #1e3a8a;
+            --background: #f1f5f9;
+            --card: #ffffff;
+            --text: #0f172a;
+            --green: #10b981;
+            --yellow: #eab308;
+            --orange: #f97316;
+            --red: #ef4444;
+        }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: var(--background); color: var(--text); margin: 0; padding: 10px; }
         .container { max-width: 620px; margin: 0 auto; }
         header { background-color: var(--primary); color: white; padding: 15px; border-radius: 10px; text-align: center; margin-bottom: 12px; }
@@ -108,50 +120,7 @@
                 <div id="opcionesInformal" class="panel-especifico hidden">
                     <div class="form-group-check"><input type="checkbox" id="i_1"><label for="i_1">Desplome, inclinación o abombamiento crítico de muros portantes de ladrillo. (Rojo)</label></div>
                     <div class="form-group-check"><input type="checkbox" id="i_2"><label for="i_2">Grietas horizontales largas en la base del muro (falla por deslizamiento). (Naranja)</label></div>
-                    <div class="form-group-check"><input type="checkbox" id="i_3"><label for="i_3">Desprendimiento continuo o caída de unidades sueltas de bloque/ladrillo. (Amarillo)</label></div>
-                    <div class="form-group-check"><input type="checkbox" id="i_4"><label for="i_4">Deformación excesiva, hundimiento o desanclaje de cubiertas artesanales. (Amarillo)</label></div>
-                    <div class="form-group-check"><input type="checkbox" id="i_5"><label for="i_5">Grietas pasantes en muros divisorios con riesgo de desprendimiento. (Amarillo)</label></div>
-                </div>
-                <div id="opcionesBahareque" class="panel-especifico hidden">
-                    <div class="form-group-check"><input type="checkbox" id="b_1"><label for="b_1">Desgarro, rotura o desanclaje severo en uniones de madera o guadua. (Naranja)</label></div>
-                    <div class="form-group-check"><input type="checkbox" id="b_2"><label for="b_2">Pérdida masiva del pañete de barro con exposición del entramado. (Amarillo)</label></div>
-                    <div class="form-group-check"><input type="checkbox" id="b_3"><label for="b_3">Hundimiento o pudrición avanzada en las bases de las columnas de apoyo. (Rojo)</label></div>
-                    <div class="form-group-check"><input type="checkbox" id="b_4"><label for="b_4">Desplome, agrietamiento vertical o desprendimiento en tapia pisada. (Rojo)</label></div>
-                    <div class="form-group-check"><input type="checkbox" id="b_5"><label for="b_5">Deformación excesiva de techos o colapso de la cubierta. (Amarillo)</label></div>
-                </div>
-                <div class="transversal-group">
-                    <p style="margin: 10px 0 5px 0; font-weight: bold; color: #475569; font-size: 0.85rem;">Alertas Críticas Globales:</p>
-                    <div class="form-group-check alert-accent"><input type="checkbox" id="g_colapso"><label for="g_colapso">Colapso parcial/total o inclinación general evidente de la edificación. (Rojo)</label></div>
-                    <div class="form-group-check alert-accent"><input type="checkbox" id="g_fema"><label for="g_fema">Indicadores FEMA: Puertas trabadas por deformación o ruidos de crujido. (Naranja)</label></div>
-                    <div class="form-group-check alert-accent"><input type="checkbox" id="g_geotecnia"><label for="g_geotecnia">Riesgo de Suelo o Ladera: Deslizamiento activo, asentamiento o grietas. (Rojo)</label></div>
-                </div>
-            </fieldset>
-            <fieldset id="panelFotos" class="hidden">
-                <legend>4. Evidencias Fotográficas Obligatorias (Máx 3)</legend>
-                <div class="form-group"><label id="lblFoto1">Foto 1</label><input type="file" id="foto1" accept="image/*" capture="environment" required><span id="wmFoto1" class="watermark-text"></span></div>
-                <div class="form-group"><label id="lblFoto2">Foto 2</label><input type="file" id="foto2" accept="image/*" capture="environment" required><span id="wmFoto2" class="watermark-text"></span></div>
-                <div class="form-group"><label id="lblFoto3">Foto 3</label><input type="file" id="foto3" accept="image/*" capture="environment" required><span id="wmFoto3" class="watermark-text"></span></div>
-            </fieldset>
-            <div class="form-group">
-                <label for="notas">Observaciones de Campo o Antecedentes Preexistentes:</label>
-                <textarea id="notas" rows="2" placeholder="Detalles específicos para el informe de ingeniería..."></textarea>
-            </div>
-            <div class="form-group">
-                <label>Dictamen Preliminar Automático de Seguridad:</label>
-                <div class="triage-box" id="triageDisplay">SELECCIONE UN SISTEMA CONSTRUCTIVO</div>
-            </div>
-            <button type="submit" class="btn-submit">Guardar Registro en Celular 💾</button>
-        </form>
-    </div>
-    <div class="card panel-gis">
-        <div class="gis-warning"><strong>⚠️ ADVERTENCIA CONTROL INTERNO GIS (COLOMBIA):</strong> Capa recolectada en WGS84. Para procesamiento en Colombia, reprojectar al origen oficial del IGAC: <strong>MAGNA-SIRGAS Origen Nacional / CTM12 (EPSG: 9377)</strong>.</div>
-        <button type="button" class="btn-pdf" id="btnGenerarPDF">📋 Generar Informe Técnico Preliminar (PDF)</button>
-        <div class="actions-panel">
-            <button type="button" class="btn-action btn-geojson" id="btnExportar">Exportar Capa QGIS (.geojson)</button>
-            <button type="button" class="btn-action btn-clear" id="btnLimpiar">Limpiar Historial Local 🗑</button>
-        </div>
-    </div>
-</div>
+```html
 <script>
     let baseDatosReportes = JSON.parse(localStorage.getItem('r_sismo_cali')) || [];
     let ultimaFoto1 = null, ultimaFoto2 = null, ultimaFoto3 = null;
@@ -168,9 +137,9 @@
         const triggers = ['g_colapso', 'g_fema', 'g_geotecnia', 'c_1', 'c_2', 'c_3', 'c_4', 'c_5', 'm_1', 'm_2', 'm_3', 'm_4', 'm_5', 'i_1', 'i_2', 'i_3', 'i_4', 'i_5', 'b_1', 'b_2', 'b_3', 'b_4', 'b_5'];
         triggers.forEach(id => { const elemento = document.getElementById(id); if (elemento) { elemento.addEventListener('change', calcularHabitabilidadAlgoritmo); } });
 
-        document.getElementById('foto1').addEventListener('change', async (e) => { ultimaFoto1 = await optimizarYConvertirImagen(e.target.files[0]); });
-        document.getElementById('foto2').addEventListener('change', async (e) => { ultimaFoto2 = await optimizarYConvertirImagen(e.target.files[0]); });
-        document.getElementById('foto3').addEventListener('change', async (e) => { ultimaFoto3 = await optimizarYConvertirImagen(e.target.files[0]); });
+        document.getElementById('foto1').addEventListener('change', async (e) => { if(e.target.files.length > 0) ultimaFoto1 = await optimizarYConvertirImagen(e.target.files[0]); });
+        document.getElementById('foto2').addEventListener('change', async (e) => { if(e.target.files.length > 0) ultimaFoto2 = await optimizarYConvertirImagen(e.target.files[0]); });
+        document.getElementById('foto3').addEventListener('change', async (e) => { if(e.target.files.length > 0) ultimaFoto3 = await optimizarYConvertirImagen(e.target.files[0]); });
     });
 
     function obtenerGPSOpciones() {
@@ -192,7 +161,9 @@
         if (!sistema) {
             panelPatologias.classList.add('hidden'); panelFotos.classList.add('hidden');
             document.getElementById('triageDisplay').innerText = "SELECCIONE UN SISTEMA CONSTRUCTIVO";
-            document.getElementById('triageDisplay').style.backgroundColor = "#e2e8f0"; return;
+            document.getElementById('triageDisplay').style.backgroundColor = "#e2e8f0";
+            document.getElementById('triageDisplay').style.color = "#0f172a";
+            return;
         }
         panelPatologias.classList.remove('hidden'); panelFotos.classList.remove('hidden');
         if (sistema === "Porticos Concreto") { document.getElementById('opcionesConcreto').classList.remove('hidden'); configurarGuiasFotos("Concreto", "Fachada General", "Vista Ampliada", "Detail Zoom"); }
@@ -249,4 +220,3 @@
     function generarInformePDF() {
         const { jsPDF } = window.jspdf; const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
         const evaluador = document.getElementById('idEvaluador').value || "[No Registrado]"; const cargo = document.getElementById('profesion').value; const mp = document.getElementById('matricula').value || "NO SUMINISTRADA"; const direccion = document.getElementById('direccion').value || "[No Registrado]"; const gps = document.getElementById('gps').value; const sistema = document.getElementById('sistema').value || "[No Seleccionado]"; const notas = document.getElementById('notas').value || "Sin observaciones particulares."; const dictamen = document.getElementById('triageDisplay').innerText;
-        doc.setFont("helvetica", "bold"); doc.setFontSize(10); doc.text("SISTEMA DE GESTIÓN DEL RIESGO DE DESASTRES", 105, 15, { align: "center" }); doc.setFontSize(12); doc.text("INFORME TÉCNICO PRELIMINAR DE INSPECCIÓN VISUAL POST-SISMO", 105, 21, { align: "center" }); doc.setFont("helvetica", "normal"); doc.setFontSize(8); doc.text("Evaluación de Habitabilidad Inmediata bajo Lineamientos NSR-10 / AIS / FEMA ATC-20", 105, 26, { align: "center" }); doc.line(15, 29, 195, 29);

@@ -221,195 +221,101 @@
                     </div>
                 </div>
 
-                <!-- ===== PASO 3: MATRIZ DE PATOLOGÍAS DINÁMICAS ===== -->
-                <div class="step-container step-3 hidden" id="step-3">
-                    <h2 class="step-title">Paso 3: Evaluación de Daños Estructurales</h2>
-                    <p class="step-description">Marque los daños observados según el sistema constructivo seleccionado</p>
+                 <!-- ===== PASO 3: MATRIZ DE PATOLOGÍAS DINÁMICAS (AIS / NSR-10) ===== -->
+ <div class="step-container step-3 hidden" id="step-3">
+ <h2 class="step-title">Paso 3: Evaluación de Daños Estructurales</h2>
+ <p class="step-description">Marque los daños observados según el sistema constructivo seleccionado (Norma AIS)</p>
+ 
+ <!-- Contenedor dinámico para patologías de la AIS -->
+ <div id="pathologies-container" class="pathologies-grid"></div>
 
-                    <!-- Contenedor dinámico para patologías según sistema -->
-                    <div id="pathologies-container" class="pathologies-grid">
-                        <!-- Se llena dinámicamente según construcción -->
-                    </div>
+ <!-- ALERTAS CRÍTICAS GLOBALES (Transversales) -->
+ <div class="alert alert-danger alert-critical">
+ <h3>Alertas Críticas Globales ⚠</h3>
+ <p>Estas condiciones exigen dictamen ROJO inmediato, independientemente del sistema constructivo.</p>
+ </div>
+ <div class="critical-alerts-grid">
+  <label class="checkbox-option critical">
+   <input type="checkbox" name="damages" value="partial_collapse" class="critical-trigger">
+   <span class="checkbox-label">
+    <strong>Colapso Parcial</strong>
+    <small>Visible en alguna sección del edificio</small>
+   </span>
+  </label>
+  <label class="checkbox-option critical">
+   <input type="checkbox" name="damages" value="total_collapse" class="critical-trigger">
+   <span class="checkbox-label">
+    <strong>Colapso Total</strong>
+    <small>Falla completa de la superestructura</small>
+   </span>
+  </label>
+  <label class="checkbox-option critical">
+   <input type="checkbox" name="damages" value="tilt" class="critical-trigger">
+   <span class="checkbox-label">
+    <strong>Inclinación Global</strong>
+    <small>Desplome o deriva visible fuera de plomo</small>
+   </span>
+  </label>
+  <label class="checkbox-option critical">
+   <input type="checkbox" name="damages" value="loss_support" class="critical-trigger">
+   <span class="checkbox-label">
+    <strong>Pérdida de Apoyo</strong>
+    <small>Asentamiento diferencial severo en cimentación</small>
+   </span>
+  </label>
+ </div>
+ <div class="form-group">
+  <label for="observations">Observaciones Generales de Campo</label>
+  <textarea id="observations" name="observations" placeholder="Escriba cualquier observación pericial relevante..." rows="4"></textarea>
+ </div>
+ </div>
 
-                    <!-- ALERTAS CRÍTICAS GLOBALES (Transversales) -->
-                    <div class="alert alert-danger alert-critical">
-                        <h3>⚠️ Alertas Críticas Globales</h3>
-                        <p>Estas condiciones son críticas independientemente del sistema constructivo</p>
-                    </div>
+ <!-- ===== PASO 4: EVIDENCIAS FOTOGRÁFICAS Y VEREDICTO ===== -->
+ <div class="step-container step-4 hidden" id="step-4">
+ <h2 class="step-title">Paso 4: Evidencias Fotográficas y Dictamen</h2>
+ <p class="step-description">Capture o cargue las fotografías aéreas o de detalle de la estructura</p>
+ 
+ <div class="photo-upload-card">
+  <h3>Registro Fotográfico Múltiple e Ilimitado</h3>
+  <p class="photo-description">Puede seleccionar múltiples imágenes simultáneamente (Fachada, nudos, grietas)</p>
+  <!-- Requerimiento de carga múltiple ilimitada cumplido -->
+  <input type="file" id="photo-multiple-input" name="evidenciasFotos" accept="image/*" multiple class="file-input hidden">
+  <button type="button" class="btn btn-primary btn-upload" onclick="document.getElementById('photo-multiple-input').click()">
+   📸 Capturar / Seleccionar Imágenes Múltiples
+  </button>
+  <!-- Contenedor dinámico de previsualizaciones -->
+  <div id="photos-preview-grid" class="photos-grid mt-2"></div>
+ </div>
 
-                    <div class="critical-alerts-grid">
-                        <label class="checkbox-option critical">
-                            <input type="checkbox" name="damages" value="partial_collapse">
-                            <span class="checkbox-label">
-                                <strong>Colapso Parcial</strong>
-                                <small>Visible en alguna parte del edificio</small>
-                            </span>
-                        </label>
+ <!-- SEMÁFORO DE HABITABILIDAD - VEREDICTO REACTIVO UNIFICADO -->
+ <div class="verdict-panel" id="verdict-panel">
+  <h3>Semáforo de Habitabilidad (Triage Sísmico Colombiano)</h3>
+  <div class="verdict-display" id="verdict-display">
+   <div class="verdict-badge" id="verdict-badge">
+    <span class="verdict-emoji">⚪</span>
+    <span class="verdict-text" id="verdict-text">En espera de evaluación de daños</span>
+   </div>
+   <div class="verdict-code" id="verdict-code">--</div>
+   <div class="verdict-action" id="verdict-action">Seleccione el sistema y evalúe las patologías en el paso 3</div>
+  </div>
+ </div>
 
-                        <label class="checkbox-option critical">
-                            <input type="checkbox" name="damages" value="total_collapse">
-                            <span class="checkbox-label">
-                                <strong>Colapso Total</strong>
-                                <small>Falla estructura completa</small>
-                            </span>
-                        </label>
+ <!-- BOTONES DE PERSISTENCIA Y EXPORTACIÓN -->
+ <div class="global-controls">
+  <button type="button" class="btn btn-success btn-large" id="btn-save-record">
+   💾 Guardar Registro Oficial en Dispositivo
+  </button>
+ </div>
+ <div class="institutional-panel">
+  <h3>Opciones de Salida e Interoperabilidad SIG</h3>
+  <div class="export-controls">
+   <button type="button" class="btn btn-danger" id="btn-generate-pdf">Generar Informe Técnico PDF</button>
+   <button type="button" class="btn btn-info" id="btn-export-geojson">Exportar Capa QGIS (.geojson)</button>
+   <button type="button" class="btn btn-warning" id="btn-clear-local">Purgar Almacenamiento Local</button>
+  </div>
+ </div>
+ </div>
 
-                        <label class="checkbox-option critical">
-                            <input type="checkbox" name="damages" value="tilt">
-                            <span class="checkbox-label">
-                                <strong>Inclinación Global</strong>
-                                <small>Todo el edificio visiblemente inclinado</small>
-                            </span>
-                        </label>
-
-                        <label class="checkbox-option critical">
-                            <input type="checkbox" name="damages" value="loss_support">
-                            <span class="checkbox-label">
-                                <strong>Pérdida de Apoyo</strong>
-                                <small>Asentamiento diferencial grave</small>
-                            </span>
-                        </label>
-
-                        <label class="checkbox-option critical">
-                            <input type="checkbox" name="damages" value="gas">
-                            <span class="checkbox-label">
-                                <strong>Fuga de Gas Detectada</strong>
-                                <small>Olor a gas / Válvula dañada</small>
-                            </span>
-                        </label>
-
-                        <label class="checkbox-option critical">
-                            <input type="checkbox" name="damages" value="fire">
-                            <span class="checkbox-label">
-                                <strong>Incendio / Humo</strong>
-                                <small>Riesgo inmediato de fuego</small>
-                            </span>
-                        </label>
-
-                        <label class="checkbox-option critical">
-                            <input type="checkbox" name="damages" value="electric">
-                            <span class="checkbox-label">
-                                <strong>Peligro Eléctrico</strong>
-                                <small>Cables expuestos / Chispas</small>
-                            </span>
-                        </label>
-                    </div>
-
-                    <!-- OBSERVACIONES Y NOTAS -->
-                    <div class="form-group">
-                        <label for="observations">Observaciones Generales</label>
-                        <textarea 
-                            id="observations" 
-                            name="observations" 
-                            placeholder="Escriba cualquier observación adicional relevante para la evaluación..."
-                            rows="4"
-                        ></textarea>
-                    </div>
-                </div>
-
-                <!-- ===== PASO 4: EVIDENCIAS FOTOGRÁFICAS Y VEREDICTO ===== -->
-                <div class="step-container step-4 hidden" id="step-4">
-                    <h2 class="step-title">Paso 4: Evidencias Fotográficas</h2>
-                    <p class="step-description">Capture las 3 fotografías obligatorias de evidencia</p>
-
-                    <div class="photos-grid">
-                        <!-- FOTO 1: Vista Estructural -->
-                        <div class="photo-upload-card">
-                            <h3>📷 Foto 1: Vista Estructural General</h3>
-                            <p class="photo-description">Captura la fachada principal o vista general del edificio</p>
-                            <div class="photo-preview" id="photo-1-preview">
-                                <span class="placeholder">Sin foto</span>
-                            </div>
-                            <input 
-                                type="file" 
-                                id="photo-1" 
-                                name="photoStructural" 
-                                accept="image/*" 
-                                capture="environment"
-                                class="file-input hidden"
-                            >
-                            <button type="button" class="btn btn-primary btn-upload" onclick="document.getElementById('photo-1').click()">
-                                📸 Capturar/Seleccionar
-                            </button>
-                        </div>
-
-                        <!-- FOTO 2: Vista de Fachada -->
-                        <div class="photo-upload-card">
-                            <h3>📷 Foto 2: Detalles de Fachada</h3>
-                            <p class="photo-description">Grietas, desprendimientos, daños visibles</p>
-                            <div class="photo-preview" id="photo-2-preview">
-                                <span class="placeholder">Sin foto</span>
-                            </div>
-                            <input 
-                                type="file" 
-                                id="photo-2" 
-                                name="photoFacade" 
-                                accept="image/*" 
-                                capture="environment"
-                                class="file-input hidden"
-                            >
-                            <button type="button" class="btn btn-primary btn-upload" onclick="document.getElementById('photo-2').click()">
-                                📸 Capturar/Seleccionar
-                            </button>
-                        </div>
-
-                        <!-- FOTO 3: Detalle de Daño -->
-                        <div class="photo-upload-card">
-                            <h3>📷 Foto 3: Detalle de Daño Específico</h3>
-                            <p class="photo-description">Zoom en elementos críticos dañados</p>
-                            <div class="photo-preview" id="photo-3-preview">
-                                <span class="placeholder">Sin foto</span>
-                            </div>
-                            <input 
-                                type="file" 
-                                id="photo-3" 
-                                name="photoDetail" 
-                                accept="image/*" 
-                                capture="environment"
-                                class="file-input hidden"
-                            >
-                            <button type="button" class="btn btn-primary btn-upload" onclick="document.getElementById('photo-3').click()">
-                                📸 Capturar/Seleccionar
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- SEMÁFORO DE HABITABILIDAD - VEREDICTO FLOTANTE -->
-                    <div class="verdict-panel" id="verdict-panel">
-                        <h3>Semáforo de Habitabilidad</h3>
-                        <div class="verdict-display" id="verdict-display">
-                            <div class="verdict-badge" id="verdict-badge">
-                                <span class="verdict-emoji">⚪</span>
-                                <span class="verdict-text">Evaluación Pendiente</span>
-                            </div>
-                            <div class="verdict-code" id="verdict-code">--</div>
-                            <div class="verdict-action" id="verdict-action">Complete todos los campos para evaluar</div>
-                        </div>
-                    </div>
-
-                    <!-- BOTONES DE CONTROL GLOBAL -->
-                    <div class="global-controls">
-                        <button type="button" class="btn btn-success btn-large" id="btn-save-record">
-                            💾 Guardar Registro
-                        </button>
-                    </div>
-
-                    <!-- PANEL INSTITUCIONAL INFERIOR -->
-                    <div class="institutional-panel">
-                        <h3>Opciones de Salida</h3>
-                        <div class="export-controls">
-                            <button type="button" class="btn btn-danger" id="btn-generate-pdf">
-                                📄 Generar Informe Técnico PDF
-                            </button>
-                            <button type="button" class="btn btn-info" id="btn-export-geojson">
-                                🗺️ Exportar Capa QGIS (.geojson)
-                            </button>
-                            <button type="button" class="btn btn-warning" id="btn-clear-local">
-                                🗑️ Purgar Almacenamiento Local
-                            </button>
-                        </div>
-                    </div>
-                </div>
 
                 <!-- CONTROLES DE NAVEGACIÓN ENTRE PASOS -->
                 <div class="step-navigation">
@@ -429,28 +335,14 @@
         </footer>
     </div>
 
-        <!-- Módulos Core -->
-    <script src="src/core/config.js"></script>
-    <script src="src/core/triage.js"></script>
-    <script src="src/core/db.js"></script>
-    <script src="src/core/storage.js"></script>
-    <script src="src/core/export.js"></script>
-    <script src="src/core/gps.js"></script>
-    <script src="src/core/photos.js"></script>
-    <script src="src/core/ai-context.js"></script>
+         <!-- Carga de Librerías Externas requeridas por export.js -->
+ <script src="https://cloudflare.com"></script>
 
-    <!-- Módulos UI -->
-    <script src="src/ui/form.js"></script>
-
-    <!-- Aplicación Principal -->
-    <script src="app.js"></script>
-    
-    <script>
-        // Exportar módulos a global para que se vean entre sí
-        window.GPSModule = GPSModule;
-        window.PhotosModule = PhotosModule;
-        window.TriageModule = TriageModule;
-        window.FormModule = FormModule;
-    </script>
+ <!-- Módulos Core con enlace unificado -->
+ <script src="src/core/export.js"></script>
+ <script src="src/core/gps.js"></script>
+ <script src="src/ui/form.js"></script>
+ <script src="app.js"></script>
 </body>
 </html>
+

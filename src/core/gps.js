@@ -5,38 +5,46 @@
 
 const GPSModule = (() => {
     
-    // Captura la posición actual del hardware móvil
+        // Captura la posición actual del hardware móvil
     function getCurrentPosition() {
-        const gpsInput = document.getElementById('gps');
-        if (!gpsInput) return;
+        const latInput = document.getElementById('gps-latitude');
+        const lonInput = document.getElementById('gps-longitude');
+        const accInput = document.getElementById('gps-accuracy');
 
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 (pos) => {
                     const lat = pos.coords.latitude.toFixed(6);
                     const lon = pos.coords.longitude.toFixed(6);
-                    gpsInput.value = `${lat}, ${lon}`;
-                    console.log(`[GPS] Ubicación satelital obtenida con éxito: ${lat}, ${lon}`);
+                    const acc = pos.coords.accuracy.toFixed(1);
                     
-                    // Si se requiere mapear de forma global para el envío posterior
+                    if(latInput) latInput.value = lat;
+                    if(lonInput) lonInput.value = lon;
+                    if(accInput) accInput.value = acc;
+                    
+                    console.log(`[GPS] Ubicación obtenida: ${lat}, ${lon} (+/- ${acc}m)`);
+                    
                     window.currentLatitude = parseFloat(lat);
                     window.currentLongitude = parseFloat(lon);
                 },
                 (err) => {
-                    // Contingencia urbana: Fallback al centro geográfico de Santiago de Cali (Gobernación)
-                    gpsInput.value = "3.451649, -76.532049";
+                    // Fallback Cali
+                    if(latInput) latInput.value = "3.451649";
+                    if(lonInput) lonInput.value = "-76.532049";
+                    if(accInput) accInput.value = "N/A (Fallback)";
+                    
                     window.currentLatitude = 3.451649;
                     window.currentLongitude = -76.532049;
-                    console.warn(`[GPS] Alerta de hardware: ${err.message}. Se inyectó fallback Cali de contingencia.`);
+                    console.warn(`[GPS] Fallback Cali inyectado.`);
                 },
                 {
-                    enableHighAccuracy: true, // Forzar uso del chip GPS y no antenas de celda celular
-                    timeout: 10000,           // Máximo 10 segundos de espera para interiores
-                    maximumAge: 0             // Forzar lectura limpia sin caché
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
                 }
             );
         } else {
-            gpsInput.value = "Hardware GPS no soportado.";
+            if(latInput) latInput.value = "No soportado";
         }
     }
 

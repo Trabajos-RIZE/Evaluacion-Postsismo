@@ -14,7 +14,7 @@
     <div id="app" class="app-container">
         <header>
             <h1>Evaluación Post-Sismo</h1>
-            <p class="subtitle">Santiago de Cali, Colombia</p>
+            <p class="subtitle">Colombia</p>
             <div class="step-indicator">
                 <span class="step-badge active" data-step="1">1</span>
                 <span class="step-badge" data-step="2">2</span>
@@ -38,20 +38,18 @@
                             type="text" 
                             id="evaluator-name" 
                             name="evaluatorName" 
-                            placeholder="Ej. Ing. Juan Pérez García"
+                            placeholder="Ej. Ing. Juan Pérez"
                             required
                         >
                     </div>
 
                     <div class="form-group">
-                        <label for="evaluator-title">Cargo Profesional *</label>
+                        <label for="evaluator-title">Actividad Profesional *</label>
                         <select id="evaluator-title" name="evaluatorTitle" required>
                             <option value="">-- Seleccionar --</option>
-                            <option value="ENGINEER_STRUCTURAL">Ingeniero Estructural</option>
-                            <option value="ENGINEER_CIVIL">Ingeniero Civil</option>
-                            <option value="ARCHITECT">Arquitecto</option>
-                            <option value="TECHNICIAN">Técnico Especializado</option>
-                            <option value="INSPECTOR">Inspector de Edificios</option>
+                            <option value="ENGINEER">Ingeniero</option>
+                             <option value="ARCHITECT">Arquitecto</option>
+                            <option value="INSPECTOR">Inspector de Obra</option>
                         </select>
                     </div>
 
@@ -61,7 +59,7 @@
                             type="text" 
                             id="evaluator-license" 
                             name="evaluatorLicense" 
-                            placeholder="Ej. TP-2024-001234"
+                            placeholder="Ej. MP-2026-001008"
                             required
                         >
                     </div>
@@ -165,7 +163,7 @@
                                 >
                                 <span class="radio-label">
                                     <strong>Estructura Metálica</strong>
-                                    <small>Acero estructural (rara en Cali)</small>
+                                    <small>Acero estructural</small>
                                 </span>
                             </label>
 
@@ -218,7 +216,7 @@
                             name="buildingYear" 
                             min="1900" 
                             max="2024"
-                            placeholder="Ej. 2005"
+                            placeholder="Ej. 1981"
                         >
                     </div>
                 </div>
@@ -431,7 +429,7 @@
         </footer>
     </div>
 
-    <!-- Módulos Core -->
+        <!-- Módulos Core -->
     <script src="src/core/config.js"></script>
     <script src="src/core/triage.js"></script>
     <script src="src/core/db.js"></script>
@@ -446,5 +444,13 @@
 
     <!-- Aplicación Principal -->
     <script src="app.js"></script>
+    
+    <script>
+        // Exportar módulos a global para que se vean entre sí
+        window.GPSModule = GPSModule;
+        window.PhotosModule = PhotosModule;
+        window.TriageModule = TriageModule;
+        window.FormModule = FormModule;
+    </script>
 </body>
 </html>

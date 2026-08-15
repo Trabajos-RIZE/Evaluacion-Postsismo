@@ -2,74 +2,84 @@
  * ECOSYSTEM CENTRAL DIRECTOR & ORCHESTRATOR LAYER
  * Ecosistema Triage Sísmico Cali v3.7 - Hito 5 Production
  */
-
 const App = (() => {
-    
+ 
     // Almacenamiento temporal del registro actual en memoria antes de guardarlo en base de datos
     let currentRecordPhotos = { f1: null, f2: null, f3: null };
 
-    function initialize() {
+        function initialize() {
         console.log('[App] Sistema inicializado. Conectando sensores estructurales...');
         
         // Enlazar los disparadores asincrónicos para procesar los archivos de la cámara en sitio
         setupPhotoListeners();
 
-        // Enlazar botones institucionales de la barra inferior del Paso 4
-        document.getElementById('sismoForm').addEventListener('submit', handleFormSubmit);
-        document.getElementById('btnGenerarPDF').addEventListener('click', generateOfficialPDFReport);
-        document.getElementById('btnExportar').addEventListener('click', triggerGeoJsonExport);
-        document.getElementById('btnLimpiar').addEventListener('click', purgeLocalHistory);
+        // Enlazar botones institucionales de la barra inferior con protección contra nulos (Paso 4)
+        try {
+            const btnSave = document.getElementById('btn-save-record');
+            if (btnSave) btnSave.addEventListener('click', handleFormSubmit);
+            
+            const btnPDF = document.getElementById('btn-generate-pdf');
+            if (btnPDF) btnPDF.addEventListener('click', generateOfficialPDFReport);
+            
+            const btnExportar = document.getElementById('btn-export-geojson');
+            if (btnExportar) btnExportar.addEventListener('click', triggerGeoJsonExport);
+            
+            const btnLimpiar = document.getElementById('btn-clear-local');
+            if (btnLimpiar) btnLimpiar.addEventListener('click', purgeLocalHistory);
+        } catch (error) {
+            console.warn('[App] Error al enlazar controles:', error);
+        }
         
         // Carga inicial del contador de registros
         refreshCounterDisplay();
     }
 
     function setupPhotoListeners() {
-        const f1Input = document.getElementById('foto1');
-        const f2Input = document.getElementById('foto2');
-        const f3Input = document.getElementById('foto3');
+        const photoInputs = [
+            { id: 'photo-1', key: 'f1', preview: 'photo-1-preview' },
+            { id: 'photo-2', key: 'f2', preview: 'photo-2-preview' },
+            { id: 'photo-3', key: 'f3', preview: 'photo-3-preview' }
+        ];
 
-        if(f1Input) f1Input.addEventListener('change', async (e) => {
-            if(e.target.files && e.target.files.length > 0) {
-                currentRecordPhotos.f1 = await window.optimizarYConvertirImagen(e.target.files[0]);
-                if(window.renderizarMiniatura) window.renderizarMiniatura(currentRecordPhotos.f1, 'foto1');
-            }
-        });
-
-        if(f2Input) f2Input.addEventListener('change', async (e) => {
-            if(e.target.files && e.target.files.length > 0) {
-                currentRecordPhotos.f2 = await window.optimizarYConvertirImagen(e.target.files[0]);
-                if(window.renderizarMiniatura) window.renderizarMiniatura(currentRecordPhotos.f2, 'foto2');
-            }
-        });
-
-        if(f3Input) f3Input.addEventListener('change', async (e) => {
-            if(e.target.files && e.target.files.length > 0) {
-                currentRecordPhotos.f3 = await window.optimizarYConvertirImagen(e.target.files[0]);
-                if(window.renderizarMiniatura) window.renderizarMiniatura(currentRecordPhotos.f3, 'foto3');
+        photoInputs.forEach(input => {
+            const el = document.getElementById(input.id);
+            if (el) {
+                el.addEventListener('change', async (e) => {
+                    if (e.target.files && e.target.files.length > 0) {
+                        const compressed = await window.optimizarYConvertirImagen(e.target.files[0]);
+                        currentRecordPhotos[input.key] = compressed;
+                        
+                        // Renderizar preview en el contenedor del HTML
+                        const previewDiv = document.getElementById(input.preview);
+                        if (previewDiv && compressed) {
+                            previewDiv.innerHTML = `<img src="${compressed}" style="width:100%; height:100%; object-fit:cover;">`;
+                        }
+                    }
+                });
             }
         });
     }
 
     async function handleFormSubmit(e) {
-        e.preventDefault();
+        if (e) e.preventDefault();
         
-        const gpsValue = document.getElementById('gps').value.split(',');
-        const targetDictamen = document.getElementById('triageDisplay').innerText;
+        const lat = document.getElementById('gps-latitude').value;
+        const lon = document.getElementById('gps-longitude').value;
+        const targetDictamen = document.getElementById('verdict-code').innerText;
 
         // Estructura pericial normalizada para auditoría
         const payload = {
             id_inspeccion: "REPORTE-CALI-" + Date.now(),
             timestamp: new Date().toLocaleString(),
-            evaluador: document.getElementById('idEvaluador').value,
-            cargo_perito: document.getElementById('profesion').value,
-            tarjeta_profesional: document.getElementById('matricula').value || "NO REGISTRADA",
-            direccion_oficial: document.getElementById('direccion').value,
-            coor_lat: parseFloat(gpsValue[0]) || 3.451649,
-            coor_lon: parseFloat(gpsValue[1]) || -76.532049,
-            sistema_constructivo: document.getElementById('sistema').value,
+            evaluador: document.getElementById('evaluator-name').value,
+            cargo_perito: document.getElementById('evaluator-title').value,
+            tarjeta_profesional: document.getElementById('evaluator-license').value || "NO REGISTRADA",
+            direccion_oficial: document.getElementById('structure-address').value,
+            coor_lat: parseFloat(lat),
+            coor_lon: parseFloat(lon),
+            sistema_constructivo: document.querySelector('input[name="constructionSystem"]:checked')?.value || "OTHER",
             dictamen_seguridad: targetDictamen,
-            observaciones_campo: document.getElementById('notas').value || "Sin observaciones particulares registradas.",
+            observaciones_campo: document.getElementById('observations').value || "Sin observaciones.",
             evidencias_fotograficas: {
                 img_general: currentRecordPhotos.f1,
                 img_ampliada: currentRecordPhotos.f2,
@@ -77,25 +87,27 @@ const App = (() => {
             }
         };
 
+        console.log('[App] Guardando registro:', payload);
+        
         // Guardar de forma robusta en la IndexedDB asíncrona (Hito 3)
         if (window.DatabaseModule && typeof window.DatabaseModule.saveAssessment === 'function') {
             try {
                 await window.DatabaseModule.saveAssessment(payload);
-                alert("¡Excelente! El peritaje estructural ha sido guardado con éxito en la base de datos local offline de este dispositivo.");
+                alert("¡Registro guardado con éxito!");
                 refreshCounterDisplay();
-                resetEcosystemForm();
+                if(window.FormModule) window.FormModule.reset();
             } catch (error) {
                 console.error("[App] Falló el resguardo en IndexedDB:", error);
-                // Fallback de contingencia a LocalStorage si la base de datos se bloquea
-                let fallbackArray = JSON.parse(localStorage.getItem('r_sismo_cali')) || [];
-                fallbackArray.push(payload);
-                localStorage.setItem('r_sismo_cali', JSON.stringify(fallbackArray));
-                alert("Guardado en búfer alternatvo local por precaución.");
-                refreshCounterDisplay();
-                resetEcosystemForm();
+                alert("Error al guardar en base de datos local.");
             }
         } else {
-            alert("Capa de persistencia ausente en el DOM.");
+            // Fallback simple si no hay DatabaseModule (para pruebas)
+            let reports = JSON.parse(localStorage.getItem('r_sismo_cali') || '[]');
+            reports.push(payload);
+            localStorage.setItem('r_sismo_cali', JSON.stringify(reports));
+            alert("Guardado en LocalStorage (Modo Fallback)");
+            refreshCounterDisplay();
+            if(window.FormModule) window.FormModule.reset();
         }
     }
 
@@ -116,7 +128,7 @@ const App = (() => {
                     alert("No existen registros guardados localmente en este dispositivo para compilar la capa vectorial.");
                     return;
                 }
-
+                
                 // Compilación estricta bajo estándar cartográfico OGC WGS84
                 const geojson = {
                     type: "FeatureCollection",
@@ -141,7 +153,7 @@ const App = (() => {
                         }
                     }))
                 };
-
+                
                 const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(geojson, null, 2));
                 const downloadAnchor = document.createElement('a');
                 downloadAnchor.setAttribute("href", dataStr);
@@ -159,7 +171,6 @@ const App = (() => {
     async function refreshCounterDisplay() {
         const displayCounter = document.getElementById('reportCount');
         if (!displayCounter) return;
-
         if (window.DatabaseModule && typeof window.DatabaseModule.getAllAssessments === 'function') {
             try {
                 const totalRecords = await window.DatabaseModule.getAllAssessments();
@@ -204,5 +215,4 @@ const App = (() => {
 // Detectar soporte PWA e inicializar orquestación
 document.addEventListener('DOMContentLoaded', () => {
     App.initialize();
-    
-
+});

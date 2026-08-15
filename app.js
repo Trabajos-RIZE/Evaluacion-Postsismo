@@ -216,3 +216,63 @@ const App = (() => {
 document.addEventListener('DOMContentLoaded', () => {
     App.initialize();
 });
+
+// ====== COMPONENTE PERICIAL: MOTOR LOGICO DEL SEMAFORO (NSR-10 / AIS) ======
+document.addEventListener('DOMContentLoaded', () => {
+    // Captura de selectores visuales y elementos de veredicto
+    const sistemaConstructivoSelect = document.getElementById('sistema-constructivo-select') || document.getElementById('sistema-constructivo');
+    const patologiaSelect = document.getElementById('patologia-select') || document.getElementById('patologia');
+    const nivelDanoSelect = document.getElementById('nivel-daño-select') || document.getElementById('nivel-dano');
+    const verdictBadge = document.getElementById('verdict-badge');
+    const verdictText = document.getElementById('verdict-text');
+
+    if (patologiaSelect && nivelDanoSelect && verdictBadge && verdictText) {
+        function calcularMatrizHabitabilidad() {
+            const sistema = sistemaConstructivoSelect ? sistemaConstructivoSelect.value : 'genérico';
+            const patologia = patologiaSelect.value;
+            const dano = nivelDanoSelect.value;
+
+            // Si no se han seleccionado campos críticos, mantener estado neutral o base
+            if (!patologia || !dano) {
+                verdictBadge.style.backgroundColor = '#6c757d'; // Gris neutro
+                verdictBadge.style.color = '#ffffff';
+                verdictText.textContent = 'En espera de evaluación de daños';
+                return;
+            }
+
+            // CRITERIO CRÍTICO DE ADOBE / MADERA O DAÑOS SEVEROS DIRECTOS (ROJO)
+            // Según guías AIS, cualquier daño severo en elementos de carga exige evacuación inmediata
+            if (dano === 'severo' || patologia === 'grieta_nudo' || patologia === 'desalineamiento' || patologia === 'diagonal_pantalla') {
+                verdictBadge.style.backgroundColor = '#dc3545'; // Rojo pericial
+                verdictBadge.style.color = '#ffffff';
+                verdictText.textContent = 'INSEGURO / NO HABITABLE - Evacuación y Aislamiento Inmediato';
+                verdictBadge.setAttribute('data-verdict-code', 'ROJO');
+                return;
+            }
+
+            // CRITERIO DE ACCESO RESTRINGIDO (AMARILLO)
+            // Daños moderados estructurales o fallas de mampostería activa
+            if (dano === 'moderado' || patologia === 'grieta_x' || patologia === 'fisura_junta' || patologia === 'union_ortogonal') {
+                verdictBadge.style.backgroundColor = '#ffc107'; // Amarillo pericial
+                verdictBadge.style.color = '#000000';
+                verdictText.textContent = 'ACCESO RESTRINGIDO / HABITABLE CON PRECAUCIÓN';
+                verdictBadge.setAttribute('data-verdict-code', 'AMARILLO');
+                return;
+            }
+
+            // CRITERIO INSPECCIÓN NORMAL (VERDE)
+            // Daños menores o cosméticos que no comprometen la estabilidad del sistema estructural
+            verdictBadge.style.backgroundColor = '#28a745'; // Verde pericial
+            verdictBadge.style.color = '#ffffff';
+            verdictText.textContent = 'HABITABLE - Inspección Concluida sin Riesgo Inminente';
+            verdictBadge.setAttribute('data-verdict-code', 'VERDE');
+        }
+
+        // Escuchadores de eventos para recalcular el semáforo al instante ante cambios en el triaje
+        patologiaSelect.addEventListener('change', calcularMatrizHabitabilidad);
+        nivelDanoSelect.addEventListener('change', calcularMatrizHabitabilidad);
+        if (sistemaConstructivoSelect) {
+            sistemaConstructivoSelect.addEventListener('change', calcularMatrizHabitabilidad);
+        }
+    }
+});

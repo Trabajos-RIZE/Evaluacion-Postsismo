@@ -236,3 +236,66 @@ document.addEventListener('DOMContentLoaded', () => {
     window.nextStep = FormModule.nextStep;
     window.previousStep = FormModule.previousStep;
 });
+
+// ====== COMPONENTE PERICIAL: INYECCIÓN DINÁMICA DE PATOLOGÍAS (IDIGER/AIS) ======
+document.addEventListener('DOMContentLoaded', () => {
+    // Referencias a los elementos selectores del HTML (Asegúrate de que los IDs coincidan)
+    const sistemaConstructivoSelect = document.getElementById('sistema-constructivo-select') || document.getElementById('sistema-constructivo');
+    const patologiaSelect = document.getElementById('patologia-select') || document.getElementById('patologia');
+
+    // Matriz técnica oficial de patologías según la ingeniería sísmica colombiana
+    const diccionarioPatologias = {
+        'porticos': [
+            { value: 'grieta_nudo', text: 'Grietas diagonales en nudos / juntas (Cortante)' },
+            { value: 'desalineamiento', text: 'Giro o desalineamiento de columnas (Deriva)' },
+            { value: 'aplastamiento', text: 'Aplastamiento de concreto en extremos de vigas/columnas' },
+            { value: 'acero_expuesto', text: 'Pandeo o exposición del acero de refuerzo' },
+            { value: 'flexion_viga', text: 'Fisuras por flexión en el centro del vano de vigas' },
+            { value: 'desprendimiento_rec', text: 'Desprendimiento severo de recubrimiento estructural' }
+        ],
+        'mamposteria': [
+            { value: 'grieta_x', text: 'Grietas en X o diagonales en muros de carga' },
+            { value: 'fisura_junta', text: 'Fisuras horizontales en junta de mortero de pega' },
+            { value: 'volcamiento_parapeto', text: 'Desprendimiento o volcamiento de parapetos / culatas' },
+            { value: 'union_ortogonal', text: 'Grietas verticales en la unión de muros ortogonales' },
+            { value: 'desprendimiento_panete', text: 'Fisuramiento o desprendimiento del pañete' }
+        ],
+        'industrializado': [
+            { value: 'diagonal_pantalla', text: 'Grietas diagonales pasantes en pantallas de concreto' },
+            { value: 'traccion_base', text: 'Fisuras horizontales de tracción en la base del muro' },
+            { value: 'aplastamiento_extremo', text: 'Aplastamiento local en los extremos de la pantalla' },
+            { value: 'cangrejera_acero', text: 'Cangrejeras severas con acero estructural expuesto' }
+        ],
+        'adobe_madera': [
+            { value: 'separacion_esquinas', text: 'Separación o agrietamiento vertical en esquinas' },
+            { value: 'erosion_base', text: 'Erosión severa en la base del muro por humedad' },
+            { value: 'asentamiento_adobe', text: 'Asentamiento diferencial con agrietamiento inclinado' },
+            { value: 'pudricion_madera', text: 'Pudrición o falla biótica en madera estructural' }
+        ]
+    };
+
+    if (sistemaConstructivoSelect && patologiaSelect) {
+        function actualizarCatalogoPatologias() {
+            const sistemaSeleccionado = sistemaConstructivoSelect.value;
+            
+            // Limpiar las opciones anteriores del selector de patologías
+            patologiaSelect.innerHTML = '<option value="" disabled selected>-- Seleccione Patología Crítica --</option>';
+
+            // Si el sistema constructivo seleccionado está mapeado en la norma, inyectar sus opciones
+            if (diccionarioPatologias[sistemaSeleccionado]) {
+                diccionarioPatologias[sistemaSeleccionado].forEach(patologia => {
+                    const option = document.createElement('option');
+                    option.value = patologia.value;
+                    option.textContent = patologia.text;
+                    patologiaSelect.appendChild(option);
+                });
+                patologiaSelect.disabled = false;
+            } else {
+                patologiaSelect.disabled = true;
+            }
+        }
+
+        // Vincular el evento de escucha para actualizar el listado automáticamente
+        sistemaConstructivoSelect.addEventListener('change', actualizarCatalogoPatologias);
+    }
+});
